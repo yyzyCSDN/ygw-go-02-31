@@ -11,11 +11,16 @@ type Event struct {
 }
 
 func (s *State) Apply(events []Event) error {
+	next := make(map[string]int, len(s.Values))
+	for key, value := range s.Values {
+		next[key] = value
+	}
 	for _, event := range events {
-		s.Values[event.Key] += event.Delta
-		if s.Values[event.Key] < 0 {
+		next[event.Key] += event.Delta
+		if next[event.Key] < 0 {
 			return fmt.Errorf("negative state")
 		}
 	}
+	s.Values = next
 	return nil
 }
